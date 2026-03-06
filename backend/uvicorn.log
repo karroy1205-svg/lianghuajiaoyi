@@ -1,0 +1,10 @@
+INFO:     Will watch for changes in these directories: ['/sandboxdata/workspace/file/a_quant_system_deploy_ready/backend']
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [2733] using StatReload
+数据库连接URL: sqlite:////sandboxdata/workspace/file/a_quant_system_deploy_ready/backend/quant_db.sqlite
+login success!
+INFO:     Started server process [2740]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+【响应内容解析失败】：name 'A股量化投研系统服务运行正常' is not defined
+INFO:     127.0.0.1:40186 - "GET /api/health HTTP/1.1" 200 OK

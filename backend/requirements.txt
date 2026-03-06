@@ -1,0 +1,47 @@
+# 核心Web框架
+fastapi==0.110.0
+uvicorn==0.29.0
+starlette==0.37.2
+
+# 数据处理
+pandas==2.2.2
+numpy==1.26.4
+scipy==1.13.0
+pandas_market_calendars==4.5.0
+
+# 机器学习与因子计算
+scikit-learn==1.4.2
+xgboost==2.0.3
+lightgbm==4.3.0
+
+# 数据库与缓存
+sqlalchemy==2.0.29
+redis==5.0.8
+pymysql==1.1.0
+python-dotenv==1.0.1
+
+# 数据源
+akshare==1.10.48
+tushare==1.2.96
+baostock==0.8.8
+
+# 系统监控与工具
+psutil==5.9.8
+python-multipart==0.0.9
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+httpx==0.27.0
+websockets==12.0
+python-dateutil==2.9.0.post0
+python-logging-loki==0.7.2
+
+# 数据可视化
+matplotlib==3.8.4
+seaborn==0.13.2
+plotly==5.22.0
+
+# 其他工具
+pyyaml==6.0.1
+click==8.1.7
+colorama==0.4.6
+tabulate==0.9.0
