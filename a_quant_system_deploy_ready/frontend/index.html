@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A股个人自用量化投研分析系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/v4-shims.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#36D399',
+                        warning: '#FBBD23',
+                        danger: '#F87272',
+                        neutral: '#64748B'
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .card-hover {
+                transition: all 0.3s ease;
+            }
+            .card-hover:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-inter text-gray-800">
+    <!-- 合规声明横幅 -->
+    <div class="bg-warning/10 border-b border-warning/30 py-3 px-4 text-center text-sm">
+        <i class="fas fa-exclamation-triangle text-warning mr-2"></i>
+        <span class="font-medium">合规声明：本系统无任何实盘交易功能，所有内容仅供投研参考，不构成任何投资建议，历史表现不代表未来收益。</span>
+    </div>
+
+    <!-- 导航栏 -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <i class="fas fa-chart-line text-primary text-2xl mr-3"></i>
+                    <span class="text-xl font-bold text-primary">A股量化投研系统</span>
+                </div>
+                <div class="flex items-center space-x-8">
+                    <a href="#home" class="text-gray-700 hover:text-primary transition-colors font-medium">首页</a>
+                    <a href="#strategies" class="text-gray-700 hover:text-primary transition-colors font-medium">策略中心</a>
+                    <a href="#signals" class="text-gray-700 hover:text-primary transition-colors font-medium">信号监测</a>
+                    <a href="#risk" class="text-gray-700 hover:text-primary transition-colors font-medium">风控管理</a>
+                    <a href="#backtest" class="text-gray-700 hover:text-primary transition-colors font-medium">回测分析</a>
+                    <a href="#user" class="text-gray-700 hover:text-primary transition-colors font-medium">用户中心</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 首页横幅 -->
+    <section id="home" class="bg-gradient-to-r from-primary/90 to-primary py-16 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 text-shadow">A股个人自用量化投研分析系统</h1>
+            <p class="text-xl mb-8 opacity-90">多因子策略 · 智能信号 · 风控闭环 · 投研赋能</p>
+            <div class="flex flex-wrap justify-center gap-4">
+                <div class="bg-white/10 backdrop-blur-sm rounded-lg px-6 py-4">
+                    <i class="fas fa-shield-alt text-2xl mb-2"></i>
+                    <div class="font-medium">合规保障</div>
+                    <div class="text-sm opacity-80">无交易功能，仅供投研参考</div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm rounded-lg px-6 py-4">
+                    <i class="fas fa-brain text-2xl mb-2"></i>
+                    <div class="font-medium">智能策略</div>
+                    <div class="text-sm opacity-80">108个独家因子，6大核心策略</div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm rounded-lg px-6 py-4">
+                    <i class="fas fa-chart-pie text-2xl mb-2"></i>
+                    <div class="font-medium">实盘拟合</div>
+                    <div class="text-sm opacity-80">回测与实盘偏差≤8%</div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm rounded-lg px-6 py-4">
+                    <i class="fas fa-graduation-cap text-2xl mb-2"></i>
+                    <div class="font-medium">小白赋能</div>
+                    <div class="text-sm opacity-80">模拟盘 + 投研教育</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 策略中心 -->
+    <section id="strategies" class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-center mb-12">核心策略矩阵</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- 多因子策略 -->
+                <div class="bg-gray-50 rounded-xl p-6 shadow-md card-hover">
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-calculator text-primary text-2xl mr-3"></i>
+                        <h3 class="text-xl font-bold">平衡型多因子策略</h3>
+                    </div>
+                    <p class="text-gray-600 mb-4">基于108个独家因子的多因子共振选股，适合震荡市和结构市，追求稳定超额收益。</p>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-neutral">年化收益：18-25%</span>
+                        <span class="text-neutral">最大回撤：≤12%</span>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-gray-200">
+                        <span class="text-xs bg-primary/10 text-primary px-2 py-1 rounded">适合震荡市</span>
+                        <span class="text-xs bg-primary/10 text-primary px-2 py-1 rounded ml-2">胜率≥65%</span>
+                    </div>
+                </div>
+
+                <!-- 事件驱动策略 -->
+                <div class="bg-gray-50 rounded-xl p-6 shadow-md card-hover">
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-bullhorn text-secondary text-2xl mr-3"></i>
+                        <h3 class="text-xl font-bold">事件驱动策略</h3>
+                    </div>
+                    <p class="text-gray-600 mb-4">基于业绩公告、监管政策、大股东增减持等事件的策略，适合事件性行情。</p>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-neutral">年化收益：20-30%</span>
+                        <span class="text-neutral">最大回撤：≤15%</span>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-gray-200">
+                        <span class="text-xs bg-secondary/10 text-secondary px-2 py-1 rounded">适合事件行情</span>
+                        <span class="text-xs bg-secondary/10 text-secondary px-2 py-1 rounded ml-2">盈亏比≥2.5</span>
+                    </div>
+                </div>
+
+                <!-- 行业轮动策略 -->
+                <div class="bg-gray-50 rounded-xl p-6 shadow-md card-hover">
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-sync-alt text-warning text-2xl mr-3"></i>
+                        <h3 class="text-xl font-bold">行业轮动策略</h3>
+                    </div>
+                    <p class="text-gray-600 mb-4">基于行业景气度的轮动策略，适合结构市和轮动行情，把握行业机会。</p>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-neutral">年化收益：22-28%</span>
+                        <span class="text-neutral">最大回撤：≤13%</span>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-gray-200">
+                        <span class="text-xs bg-warning/10 text-warning px-2 py-1 rounded">适合结构市</span>
+                        <span class="text-xs bg-warning/10 text-warning px-2 py-1 rounded ml-2">夏普比率≥2.0</span>
+                    </div>
+                </div>
+
+                <!-- 防御型策略 -->
+                <div class="bg-gray-50 rounded-xl p-6 shadow-md card-hover">
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-shield text-danger text-2xl mr-3"></i>
+                        <h3 class="text-xl font-bold">防御型策略</h3>
+                    </div>
+                    <p class="text-gray-600 mb-4">低风险防御型策略，适合熊市和极端行情，控制回撤，保护本金。</p>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-neutral">年化收益：8-15%</span>
+                        <span class="text-neutral">最大回撤：≤8%</span>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-gray-200">
+                        <span class="text-xs bg-danger/10 text-danger px-2 py-1 rounded">适合熊市</span>
+                        <span class="text-xs bg-danger/10 text-danger px-2 py-1 rounded ml-2">卡玛比率≥20</span>
+                    </div>
+                </div>
+
+                <!-- 统计套利策略 -->
+                <div class="bg-gray-50 rounded-xl p-6 shadow-md card-hover">
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-balance-scale text-primary text-2xl mr-3"></i>
+                        <h3 class="text-xl font-bold">统计套利策略</h3>
+                    </div>
+                    <p class="text-gray-600 mb-4">基于量化统计的套利策略，适合震荡市，捕捉市场错误定价机会。</p>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-neutral">年化收益：15-22%</span>
+                        <span class="text-neutral">最大回撤：≤10%</span>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-gray-200">
+                        <span class="text-xs bg-primary/10 text-primary px-2 py-1 rounded">适合震荡市</span>
+                        <span class="text-xs bg-primary/10 text-primary px-2 py-1 rounded ml-2">胜率≥70%</span>
+                    </div>
+                </div>
+
+                <!-- 趋势跟踪策略 -->
+                <div class="bg-gray-50 rounded-xl p-6 shadow-md card-hover">
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-line-chart text-secondary text-2xl mr-3"></i>
+                        <h3 class="text-xl font-bold">趋势跟踪策略</h3>
+                    </div>
+                    <p class="text-gray-600 mb-4">基于价格趋势的跟踪策略，适合牛市和单边行情，把握趋势机会。</p>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-neutral">年化收益：25-35%</span>
+                        <span class="text-neutral">最大回撤：≤18%</span>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-gray-200">
+                        <span class="text-xs bg-secondary/10 text-secondary px-2 py-1 rounded">适合牛市</span>
+                        <span class="text-xs bg-secondary/10 text-secondary px-2 py-1 rounded ml-2">索提诺比率≥3.0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 信号监测 -->
+    <section id="signals" class="py-16 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-center mb-12">今日买卖信号</h2>
+            <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                <div class="p-6 border-b border-gray-200">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xl font-bold">多因子共振信号（2026-03-04）</h3>
+                        <span class="text-sm bg-primary/10 text-primary px-2 py-1 rounded">更新时间：10:30</span>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">股票代码</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">股票名称</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">信号类型</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">综合得分</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">当前价格</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作建议</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">000001</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">平安银行</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">买入</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">0.85</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">12.56</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-primary">
+                                    <button class="hover:bg-primary/10 px-3 py-1 rounded border border-primary/20 transition-colors">查看详情</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">000002</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">万科A</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">卖出</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">0.32</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">8.23</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-primary">
+                                    <button class="hover:bg-primary/10 px-3 py-1 rounded border border-primary/20 transition-colors">查看详情</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">600036</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">招商银行</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">买入</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">0.92</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">38.56</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-primary">
+                                    <button class="hover:bg-primary/10 px-3 py-1 rounded border border-primary/20 transition-colors">查看详情</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">600519</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">贵州茅台</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">持有</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">0.78</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">1785.32</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-primary">
+                                    <button class="hover:bg-primary/10 px-3 py-1 rounded border border-primary/20 transition-colors">查看详情</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="p-6 text-center">
+                    <button class="text-primary hover:text-primary/80 transition-colors">查看更多信号 <i class="fas fa-chevron-right ml-1"></i></button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 风控管理 -->
+    <section id="risk" class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-center mb-12">风控管理中心</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                <div class="bg-gray-50 rounded-xl p-6 shadow-md">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold">账户总市值</h3>
+                        <i class="fas fa-wallet text-primary text-xl"></i>
+                    </div>
+                    <div class="text-2xl font-bold mb-2">¥1,056,890</div>
+                    <div class="text-sm text-green-600"><i class="fas fa-arrow-up mr-1"></i> +5.6% 本周</div>
+                </div>
+                <div class="bg-gray-50 rounded-xl p-6 shadow-md">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold">当前仓位</h3>
+                        <i class="fas fa-chart-pie text-secondary text-xl"></i>
+                    </div>
+                    <div class="text-2xl font-bold mb-2">72%</div>
+                    <div class="text-sm text-neutral">已使用资金：¥760,960</div>
+                </div>
+                <div class="bg-gray-50 rounded-xl p-6 shadow-md">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold">最大回撤</h3>
+                        <i class="fas fa-exclamation-triangle text-warning text-xl"></i>
+                    </div>
+                    <div class="text-2xl font-bold mb-2">8.2%</div>
+                    <div class="text-sm text-neutral">预警阈值：10%</div>
+                </div>
+                <div class="bg-gray-50 rounded-xl p-6 shadow-md">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold">今日交易次数</h3>
+                        <i class="fas fa-exchange-alt text-danger text-xl"></i>
+                    </div>
+                    <div class="text-2xl font-bold mb-2">3</div>
+                    <div class="text-sm text-neutral">今日上限：5次</div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-gray-50 rounded-xl p-6 shadow-md">
+                    <h3 class="text-xl font-bold mb-6">风控指标监控</h3>
+                    <div id="riskChart" class="w-full h-64"></div>
+                </div>
+                <div class="bg-gray-50 rounded-xl p-6 shadow-md">
+                    <h3 class="text-xl font-bold mb-6">告警记录</h3>
+                    <div class="space-y-4">
+                        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+                            <div class="flex items-center">
+                                <i class="fas fa-exclamation-triangle text-yellow-600 mr-2"></i>
+                                <span class="font-medium text-yellow-800">预警</span>
+                                <span class="text-sm text-yellow-600 ml-auto">2026-03-04 09:45</span>
+                            </div>
+                            <p class="text-sm text-yellow-700 mt-1">股票000002（万科A）今日跌幅超过5%，请注意风险。</p>
+                        </div>
+                        <div class="bg-blue-50 border-l-4 border-blue-400 p-4">
+                            <div class="flex items-center">
+                                <i class="fas fa-info-circle text-blue-600 mr-2"></i>
+                                <span class="font-medium text-blue-800">信息</span>
+                                <span class="text-sm text-blue-600 ml-auto">2026-03-03 14:30</span>
+                            </div>
+                            <p class="text-sm text-blue-700 mt-1">策略平衡型多因子策略今日调仓完成，调仓比例15%。</p>
+                        </div>
+                        <div class="bg-green-50 border-l-4 border-green-400 p-4">
+                            <div class="flex items-center">
+                                <i class="fas fa-check-circle text-green-600 mr-2"></i>
+                                <span class="font-medium text-green-800">正常</span>
+                                <span class="text-sm text-green-600 ml-auto">2026-03-03 09:30</span>
+                            </div>
+                            <p class="text-sm text-green-700 mt-1">所有风控指标正常，账户运行良好。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 回测分析 -->
+    <section id="backtest" class="py-16 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-center mb-12">回测分析中心</h2>
+            <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                <div class="p-6 border-b border-gray-200">
+                    <div class="flex flex-wrap justify-between items-center gap-4">
+                        <h3 class="text-xl font-bold">平衡型多因子策略回测结果（2025-01-01 至 2025-12-31）</h3>
+                        <div class="flex gap-4">
+                            <select class="border border-gray-300 rounded px-3 py-1 text-sm">
+                                <option>平衡型多因子策略</option>
+                                <option>事件驱动策略</option>
+                                <option>行业轮动策略</option>
+                            </select>
+                            <input type="date" class="border border-gray-300 rounded px-3 py-1 text-sm" value="2025-01-01">
+                            <input type="date" class="border border-gray-300 rounded px-3 py-1 text-sm" value="2025-12-31">
+                            <button class="bg-primary text-white px-3 py-1 rounded text-sm hover:bg-primary/90 transition-colors">开始回测</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <div class="text-2xl font-bold text-primary">24.5%</div>
+                            <div class="text-sm text-neutral">年化收益</div>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <div class="text-2xl font-bold text-warning">11.8%</div>
+                            <div class="text-sm text-neutral">最大回撤</div>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <div class="text-2xl font-bold text-secondary">2.1</div>
+                            <div class="text-sm text-neutral">夏普比率</div>
+                        </div>
+                    </div>
+                    <div id="backtestChart" class="w-full h-80"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 用户中心 -->
+    <section id="user" class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-center mb-12">用户中心</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-1">
+                    <div class="bg-gray-50 rounded-xl p-6 shadow-md text-center">
+                        <div class="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-user text-primary text-3xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">量化新手</h3>
+                        <p class="text-sm text-neutral mb-4">注册时间：2026-02-01</p>
+                        <div class="border-t border-gray-200 pt-4">
+                            <div class="flex justify-between mb-2">
+                                <span class="text-sm text-neutral">学习进度</span>
+                                <span class="text-sm">80%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                <div class="bg-primary h-2.5 rounded-full" style="width: 80%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-6 bg-gray-50 rounded-xl p-6 shadow-md">
+                        <h3 class="text-lg font-bold mb-4">快速入口</h3>
+                        <div class="space-y-3">
+                            <a href="#" class="flex items-center text-gray-700 hover:text-primary transition-colors">
+                                <i class="fas fa-play-circle mr-3"></i>
+                                模拟盘交易
+                            </a>
+                            <a href="#" class="flex items-center text-gray-700 hover:text-primary transition-colors">
+                                <i class="fas fa-graduation-cap mr-3"></i>
+                                投研课程
+                            </a>
+                            <a href="#" class="flex items-center text-gray-700 hover:text-primary transition-colors">
+                                <i class="fas fa-cog mr-3"></i>
+                                账户设置
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="lg:col-span-2">
+                    <div class="bg-gray-50 rounded-xl p-6 shadow-md">
+                        <h3 class="text-xl font-bold mb-6">模拟盘账户</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                            <div class="bg-white rounded-lg p-4 text-center">
+                                <div class="text-2xl font-bold text-primary">¥100,000</div>
+                                <div class="text-sm text-neutral">初始资金</div>
+                            </div>
+                            <div class="bg-white rounded-lg p-4 text-center">
+                                <div class="text-2xl font-bold text-green-600">¥108,560</div>
+                                <div class="text-sm text-neutral">当前市值</div>
+                            </div>
+                            <div class="bg-white rounded-lg p-4 text-center">
+                                <div class="text-2xl font-bold text-green-600">+8.56%</div>
+                                <div class="text-sm text-neutral">总收益</div>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-100">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">股票代码</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">股票名称</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">持仓数量</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">成本价</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">当前价</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">盈亏</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">000001</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">平安银行</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">1000股</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">12.00</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">12.56</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600">+560.00</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">600036</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">招商银行</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">200股</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">36.50</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">38.56</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600">+412.00</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-chart-line text-primary text-2xl mr-3"></i>
+                        <span class="text-xl font-bold">A股量化投研系统</span>
+                    </div>
+                    <p class="text-gray-400 text-sm">专为个人投资者打造的量化投研分析工具，无交易功能，仅供投研参考。</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">快速链接</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#home" class="hover:text-white transition-colors">首页</a></li>
+                        <li><a href="#strategies" class="hover:text-white transition-colors">策略中心</a></li>
+                        <li><a href="#signals" class="hover:text-white transition-colors">信号监测</a></li>
+                        <li><a href="#risk" class="hover:text-white transition-colors">风控管理</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">帮助中心</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors">使用指南</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">常见问题</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">联系我们</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">合规声明</h3>
+                    <p class="text-gray-400 text-sm">本系统无任何实盘交易功能，所有内容仅供投研参考，不构成任何投资建议，历史表现不代表未来收益。</p>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400 text-sm">
+                © 2026 A股量化投研系统 版权所有
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 风控指标图表
+        const riskChart = echarts.init(document.getElementById('riskChart'));
+        const riskOption = {
+            title: {
+                text: '风控指标趋势',
+                left: 'center',
+                textStyle: {
+                    fontSize: 14,
+                    color: '#64748B'
+                }
+            },
+            tooltip: {
+                trigger: 'axis'
+            },
+            legend: {
+                data: ['仓位', '回撤', '夏普比率'],
+                bottom: 0
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '10%',
+                top: '15%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'category',
+                data: ['周一', '周二', '周三', '周四', '周五']
+            },
+            yAxis: [
+                {
+                    type: 'value',
+                    name: '仓位(%)',
+                    min: 0,
+                    max: 100,
+                    position: 'left'
+                },
+                {
+                    type: 'value',
+                    name: '回撤(%)',
+                    min: 0,
+                    max: 20,
+                    position: 'right'
+                }
+            ],
+            series: [
+                {
+                    name: '仓位',
+                    type: 'line',
+                    yAxisIndex: 0,
+                    data: [65, 68, 72, 70, 72],
+                    itemStyle: {
+                        color: '#165DFF'
+                    }
+                },
+                {
+                    name: '回撤',
+                    type: 'line',
+                    yAxisIndex: 1,
+                    data: [5.2, 6.1, 7.5, 6.8, 8.2],
+                    itemStyle: {
+                        color: '#F87272'
+                    }
+                },
+                {
+                    name: '夏普比率',
+                    type: 'line',
+                    yAxisIndex: 1,
+                    data: [1.8, 1.9, 2.0, 1.95, 2.1],
+                    itemStyle: {
+                        color: '#36D399'
+                    }
+                }
+            ]
+        };
+        riskChart.setOption(riskOption);
+
+        // 回测结果图表
+        const backtestChart = echarts.init(document.getElementById('backtestChart'));
+        const backtestOption = {
+            title: {
+                text: '策略回测收益曲线',
+                left: 'center',
+                textStyle: {
+                    fontSize: 14,
+                    color: '#64748B'
+                }
+            },
+            tooltip: {
+                trigger: 'axis'
+            },
+            legend: {
+                data: ['策略收益', '沪深300'],
+                bottom: 0
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '10%',
+                top: '15%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'category',
+                data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
+            },
+            yAxis: {
+                type: 'value',
+                name: '累计收益(%)',
+                axisLabel: {
+                    formatter: '{value}%'
+                }
+            },
+            series: [
+                {
+                    name: '策略收益',
+                    type: 'line',
+                    data: [2.5, 5.8, 8.2, 12.5, 15.8, 18.2, 20.5, 22.8, 25.2, 23.5, 24.8, 24.5],
+                    itemStyle: {
+                        color: '#165DFF'
+                    },
+                    areaStyle: {
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                            { offset: 0, color: 'rgba(22, 93, 255, 0.3)' },
+                            { offset: 1, color: 'rgba(22, 93, 255, 0.05)' }
+                        ])
+                    }
+                },
+                {
+                    name: '沪深300',
+                    type: 'line',
+                    data: [1.2, 3.5, 5.2, 8.5, 10.8, 12.2, 14.5, 16.8, 18.2, 16.5, 17.8, 17.5],
+                    itemStyle: {
+                        color: '#F87272'
+                    },
+                    areaStyle: {
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                            { offset: 0, color: 'rgba(248, 114, 114, 0.3)' },
+                            { offset: 1, color: 'rgba(248, 114, 114, 0.05)' }
+                        ])
+                    }
+                }
+            ]
+        };
+        backtestChart.setOption(backtestOption);
+
+        // 响应式调整
+        window.addEventListener('resize', () => {
+            riskChart.resize();
+            backtestChart.resize();
+        });
+
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>
